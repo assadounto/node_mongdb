@@ -1,0 +1,14 @@
+{
+  "name": "node_mongdb",
+  "version": "1.0.0",
+  "description": "mongodb_test_node",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "author": "rich",
+  "license": "ISC",
+  "dependencies": {
+    "mongodb": "^4.13.0"
+  }
+}
