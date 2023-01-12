@@ -45,6 +45,23 @@ async function main() {
   assert(addedItem.insertedId);
   const addedItemQuery = await circulationRepo.getById(addedItem.insertedId);
   assert.deepEqual( addedItemQuery,newItem);
+   
+  const updatedItem = await circulationRepo.updateItem(addedItem.insertedId, {
+    "Newspaper": "New Ghana Today",
+    "Daily Circulation, 2004": 2192,
+    "Daily Circulation, 2013": 1674,
+    "Change in Daily Circulation, 2004-2013": -24,
+    "Pulitzer Prize Winners and Finalists, 1990-2003": 1,
+    "Pulitzer Prize Winners and Finalists, 2004-2014": 1,
+    "Pulitzer Prize Winners and Finalists, 1990-2014": 2
+  });
+
+  //assert.equal(updatedItem.modifiedCount, 1);
+  const updatedItemQuery = await circulationRepo.getById(addedItem.insertedId);
+  assert.equal(updatedItemQuery.Newspaper, "New Ghana Today");
+  
+  const removed = await circulationRepo.remove(addedItem.insertedId)
+  assert(removed)
 
   } catch (err) {
     console.log(err);

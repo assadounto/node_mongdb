@@ -3,8 +3,40 @@ const {MongoClient,ObjectId}=require('mongodb');
 function circulationRepo(){
     const url='mongodb://localhost:27017';
     const dbName='circulation';
-    
+     
+    function updateItem(id, item) {
+        return new Promise(async function(resolve,reject){
+            const client=new MongoClient(url);
+            try{
+                await client.connect();
+                const db = client.db(dbName);
+                const updatedItem = await db.collection('newspapers')
+                .findOneAndReplace({_id:ObjectId(id)},item,{returnOriginal:false}); 
+                console.log(updatedItem.value);
+                resolve(updatedItem.value);
+                client.close();
+            }catch(err){
+                reject(err);
+            }
+        });
 
+    }
+    function remove(id){
+        return new Promise(async function(resolve,reject){
+            const client=new MongoClient(url);
+            try{
+                await client.connect();
+                const db = client.db(dbName);
+                const removed= await db.collection('newspapers').deleteOne({_id:ObjectId(id)}); 
+                resolve(removed.deletedCount==1);
+                client.close();
+            }catch(err){
+                reject(err);
+            }
+        });
+
+    }
+    
     function addItem(item) {
         return new Promise(async function(resolve,reject){
             const client=new MongoClient(url);
@@ -70,7 +102,7 @@ function circulationRepo(){
             }
         });
     }
-    return {loadData,get,getById,addItem};
+    return {loadData,get,getById,addItem, updateItem,remove};
 }
 
 
