@@ -15,17 +15,37 @@ async function main() {
   try {
   
   await client.connect();
+  
   const results = await circulationRepo.loadData(data);
   assert.equal(data.length, results.insertedCount);
   
   const getData = await circulationRepo.get();
   assert.equal(data.length, getData.length);
-   const filterData = await circulationRepo.get({ Newspaper:  getData[4].Newspaper });
+ 
+  const filterData = await circulationRepo.get({ Newspaper:  getData[4].Newspaper });
+  assert.deepEqual(getData[4], filterData[0]);
 
-   assert.deepEqual(getData[4], filterData[0]);
+  const limitData = await circulationRepo.get({}, 3);
+  assert.equal(limitData.length, 3);
+   
+  const id = getData[4]._id.toString();
+  const byId = await circulationRepo.getById(id);
+  assert.deepEqual(getData[4], byId);
+  const newItem = {
+    "Newspaper": "Ghana Today",
+    "Daily Circulation, 2004": 2192,
+    "Daily Circulation, 2013": 1674,
+    "Change in Daily Circulation, 2004-2013": -24,
+    "Pulitzer Prize Winners and Finalists, 1990-2003": 1,
+    "Pulitzer Prize Winners and Finalists, 2004-2014": 1,
+    "Pulitzer Prize Winners and Finalists, 1990-2014": 2
+  }
+  const addedItem = await circulationRepo.addItem(newItem);
 
-   const limitData = await circulationRepo.get({}, 3);
-   assert.equal(limitData.length, 3);
+  assert(addedItem.insertedId);
+  const addedItemQuery = await circulationRepo.getById(addedItem.insertedId);
+  assert.deepEqual( addedItemQuery,newItem);
+
   } catch (err) {
     console.log(err);
   }
